@@ -2,7 +2,6 @@ import * as winston from 'winston';
 
 const { combine, timestamp, printf, colorize } = winston.format;
 
-// Define the custom format for the logger
 const logFormat = printf(({ level, message, timestamp, ...metadata }) => {
   let msg = `${timestamp} [${level}] : ${message} `;
   if (Object.keys(metadata).length > 0) {
@@ -11,7 +10,6 @@ const logFormat = printf(({ level, message, timestamp, ...metadata }) => {
   return msg;
 });
 
-// Create a new Winston logger instance
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: combine(
@@ -23,11 +21,8 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    // In a real application, you might also add a file transport:
-    // new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    // new winston.transports.File({ filename: 'combined.log' }),
   ],
-  exitOnError: false, // Do not exit on handled exceptions
+  exitOnError: false,
 });
 
 export default logger;

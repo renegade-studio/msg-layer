@@ -26,6 +26,7 @@
     "clean": "rm -rf dist/"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.67.0",
     "@humanlayer/sdk": "^0.7.7",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "chalk": "^5.4.1",

@@ -2,14 +2,18 @@ import { AIProvider } from './interface';
 import { OllamaProvider } from './ollama';
 import { LMStudioProvider } from './lmstudio';
 import { TogetherAIProvider } from './together';
+import { ConfigService } from '../configService';
+import logger from '../logger';
 
 type ProviderName = 'ollama' | 'lmstudio' | 'togetherai';
 
 export class AIProviderManager {
   private providers: Map<ProviderName, AIProvider>;
   private activeProvider?: AIProvider;
+  private configService: ConfigService;
 
-  constructor() {
+  constructor(configService: ConfigService) {
+    this.configService = configService;
     this.providers = new Map();
     this.providers.set('ollama', new OllamaProvider());
     this.providers.set('lmstudio', new LMStudioProvider());

@@ -6,7 +6,6 @@ export class OllamaProvider implements AIProvider {
   private config: any;
 
   constructor() {
-    // Default host, can be overridden in initialize
     this.ollama = new Ollama({ host: 'http://localhost:11434' });
   }
 

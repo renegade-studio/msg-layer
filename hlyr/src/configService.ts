@@ -30,7 +30,6 @@ export class ConfigService {
   private config: AppConfig;
 
   constructor() {
-    // Initialize with a default config
     this.config = {
       activeProvider: 'ollama',
       providers: {
@@ -59,7 +58,6 @@ export class ConfigService {
   }
 
   private applyEnvironmentVariableOverrides(): void {
-    // Override with environment variables
     if (process.env.HUMANLAYER_ACTIVE_PROVIDER) {
       this.config.activeProvider = process.env.HUMANLAYER_ACTIVE_PROVIDER as any;
     }

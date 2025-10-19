@@ -18,7 +18,6 @@ export class OllamaModelManager implements ModelManager {
   }
 
   async updateModel(modelName: string): Promise<void> {
-    // Ollama's pull command also updates the model if it exists
     await this.downloadModel(modelName);
   }
 }

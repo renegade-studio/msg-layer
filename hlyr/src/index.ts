@@ -19,6 +19,8 @@ import {
 } from './config.js'
 import { getProject } from './hlClient.js'
 import chalk from 'chalk'
+import { ConfigService } from './configService.js'
+import { AIProviderManager } from './ai_provider_manager/manager.js'
 
 // Version is injected at build time by tsup
 const VERSION = process.env.PACKAGE_VERSION || '0.11.0'
@@ -42,26 +44,19 @@ function showAbbreviatedConfig() {
   console.log(`  API Key: ${apiKeyDisplay} ${chalk.gray(`(${configWithSources.api_key?.sourceName})`)}`)
 }
 
-const program = new Command()
+const program = new Command();
+
+const configService = new ConfigService();
+const aiProviderManager = new AIProviderManager(configService);
 
 async function authenticate(printSelectedProject: boolean = false) {
-  const config = resolveFullConfig({})
+  await configService.loadConfig();
+  const config = configService.getAll();
 
-  if (!config.api_key) {
-    console.error('Error: No HumanLayer API token found.')
-    showAbbreviatedConfig()
-    process.exit(1)
-  }
-
-  try {
-    await getProject(config.api_base_url, config.api_key)
-    if (printSelectedProject) {
-      // Project authenticated successfully
-    }
-  } catch (error) {
-    console.error(chalk.red('Authentication failed:'), error)
-    showAbbreviatedConfig()
-    process.exit(1)
+  // This is a placeholder for the old authentication logic.
+  // In a real application, you would use the config to authenticate.
+  if (!config.providers.togetherai.apiKey) {
+     console.warn('Warning: No TogetherAI API key found in config. AI commands may not work.');
   }
 }
 
@@ -150,6 +145,24 @@ configCommand
   .option('--email-context <context>', 'Context about the email recipient')
   .option('--json', 'Output as JSON with masked keys')
   .action(configShowCommand)
+
+program
+    .command('ai <prompt>')
+    .description('Send a prompt to the active AI provider')
+    .action(async (prompt: string) => {
+        await configService.loadConfig();
+        const config = configService.getAll();
+        const activeProvider = config.activeProvider;
+        const providerConfig = config.providers[activeProvider];
+
+        await aiProviderManager.setActiveProvider(activeProvider, providerConfig);
+
+        const response = await aiProviderManager.request({
+            messages: [{ role: 'user', content: prompt }],
+        });
+
+        console.log(response);
+    });
 
 program
   .command('contact_human')

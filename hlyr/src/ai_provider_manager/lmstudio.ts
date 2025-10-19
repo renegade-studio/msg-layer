@@ -10,7 +10,7 @@ export class LMStudioProvider implements AIProvider {
   async initialize(config: any): Promise<void> {
     this.config = config;
     this.openai = new OpenAI({
-      apiKey: 'not-needed', // LMStudio doesn't require an API key
+      apiKey: 'not-needed',
       baseURL: config.baseURL || 'http://localhost:1234/v1',
     });
   }
