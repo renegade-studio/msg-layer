@@ -27,6 +27,20 @@ export class OllamaProvider implements AIProvider {
     return response;
   }
 
+  async *requestStream(request: any): AsyncIterable<string> {
+    if (!this.config || !this.config.model) {
+      throw new Error('Ollama provider is not configured with a model.');
+    }
+    const stream = await this.ollama.chat({
+      model: this.config.model,
+      messages: request.messages,
+      stream: true,
+    });
+    for await (const chunk of stream) {
+      yield chunk.message.content;
+    }
+  }
+
   getName(): string {
     return 'Ollama';
   }

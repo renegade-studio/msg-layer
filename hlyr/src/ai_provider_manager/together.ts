@@ -29,6 +29,20 @@ export class TogetherAIProvider implements AIProvider {
     return completion;
   }
 
+  async *requestStream(request: any): AsyncIterable<string> {
+    if (!this.config || !this.config.model) {
+      throw new Error('Together AI provider is not configured with a model.');
+    }
+    const stream = await this.openai.chat.completions.create({
+      model: this.config.model,
+      messages: request.messages,
+      stream: true,
+    });
+    for await (const chunk of stream) {
+      yield chunk.choices[0]?.delta?.content || '';
+    }
+  }
+
   getName(): string {
     return 'TogetherAI';
   }

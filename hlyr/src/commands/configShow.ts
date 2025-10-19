@@ -8,14 +8,19 @@ export async function configShowCommand(this: Command) {
   await configService.loadConfig();
   const config = configService.getAll();
 
+  const maskedConfig = { ...config };
+
+  // Mask all provider API keys
+  for (const provider in maskedConfig.providers) {
+      if (maskedConfig.providers[provider].apiKey) {
+        maskedConfig.providers[provider].apiKey = maskSensitiveValue(maskedConfig.providers[provider].apiKey);
+      }
+  }
+
   if (options.json) {
-    const maskedConfig = { ...config };
-    if (maskedConfig.providers.togetherai.apiKey) {
-      maskedConfig.providers.togetherai.apiKey = maskSensitiveValue(maskedConfig.providers.togetherai.apiKey);
-    }
     console.log(JSON.stringify(maskedConfig, null, 2));
   } else {
     console.log('HumanLayer Configuration:');
-    console.log(JSON.stringify(config, null, 2));
+    console.log(JSON.stringify(maskedConfig, null, 2));
   }
 }

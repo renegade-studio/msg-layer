@@ -1,23 +1,26 @@
 import { AIProvider } from './interface';
 import OpenAI from 'openai';
 
-export class LMStudioProvider implements AIProvider {
+export class QwenProvider implements AIProvider {
   private openai: OpenAI;
   private config: any;
 
   constructor() {}
 
   async initialize(config: any): Promise<void> {
+    if (!config.apiKey) {
+      throw new Error('Qwen provider requires an API key.');
+    }
     this.config = config;
     this.openai = new OpenAI({
-      apiKey: 'not-needed',
-      baseURL: config.baseURL || 'http://localhost:1234/v1',
+      apiKey: config.apiKey,
+      baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
     });
   }
 
   async request(request: any): Promise<any> {
     if (!this.config || !this.config.model) {
-      throw new Error('LMStudio provider is not configured with a model.');
+      throw new Error('Qwen provider is not configured with a model.');
     }
     const completion = await this.openai.chat.completions.create({
       model: this.config.model,
@@ -28,7 +31,7 @@ export class LMStudioProvider implements AIProvider {
 
   async *requestStream(request: any): AsyncIterable<string> {
     if (!this.config || !this.config.model) {
-      throw new Error('LMStudio provider is not configured with a model.');
+      throw new Error('Qwen provider is not configured with a model.');
     }
     const stream = await this.openai.chat.completions.create({
       model: this.config.model,
@@ -41,6 +44,6 @@ export class LMStudioProvider implements AIProvider {
   }
 
   getName(): string {
-    return 'LMStudio';
+    return 'Qwen';
   }
 }

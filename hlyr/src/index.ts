@@ -165,6 +165,27 @@ program
     });
 
 program
+    .command('ai-stream <prompt>')
+    .description('Send a prompt to the active AI provider and stream the response')
+    .action(async (prompt: string) => {
+        await configService.loadConfig();
+        const config = configService.getAll();
+        const activeProvider = config.activeProvider;
+        const providerConfig = config.providers[activeProvider];
+
+        await aiProviderManager.setActiveProvider(activeProvider, providerConfig);
+
+        const stream = aiProviderManager.requestStream({
+            messages: [{ role: 'user', content: prompt }],
+        });
+
+        for await (const chunk of stream) {
+            process.stdout.write(chunk);
+        }
+        console.log();
+    });
+
+program
   .command('contact_human')
   .description('Contact a human with a message')
   .requiredOption('-m, --message <text>', 'The message to send (use "-" to read from stdin)')
